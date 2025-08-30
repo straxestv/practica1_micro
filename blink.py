@@ -3,19 +3,18 @@ import socket
 import time
 from machine import Pin
 
-# ---------------------------
 # Configuración WiFi
 # ---------------------------
-SSID = "GIVE-ME-FREE-LIGMA"
-PASSWORD = "nakanoyotsubagod"
+SSID = "Nombre de la red" # aqui se ingresa el nombre de nuestra red
+PASSWORD = "contraseña" # se ingresa la contraseña de nuestra red 
 
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
-wlan.connect(SSID, PASSWORD)
+wlan.connect(SSID, PASSWORD) #se conectara a la red con los dos atributos
 
 print("Conectando a WiFi...")
 while not wlan.isconnected():
-    time.sleep(1)
+    time.sleep(1) #se conectara a la red y mostrara un mensaje en lo que se estable conexion con la red
 
 print("Conectado a WiFi:", wlan.ifconfig())
 ip = wlan.ifconfig()[0]
