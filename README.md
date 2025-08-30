@@ -15,12 +15,16 @@ Favorecer el aprendizaje practico de redes, electronica digital y programacion w
 #Ejecucion del proyecto
 
 1.- Clona o copia los archivos del proyecto en tu computadora.
+
 2.- Abre el codigo en Thonny y selecciona el interprete MicroPython.
+
 3.- Configura tu red cambiando los datos entre comillas de las siguientes variables:
+
 SSID = "Tu-SSID"
 PASSWORD = "La contraseña de tu red"
 
 4.- Ejecuta el programa y observa en la consola la direccion IP asignada al Pico W.
+
 5.- Desde cualquier navegador, ingresa a:
 
 http://<IP-DE-TU-PICO>
