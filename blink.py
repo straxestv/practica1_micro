@@ -3,26 +3,27 @@ import socket
 import time
 from machine import Pin
 
+# ---------------------------
 # Configuración WiFi
 # ---------------------------
-SSID = "Nombre de la red" # aqui se ingresa el nombre de nuestra red
-PASSWORD = "contraseña" # se ingresa la contraseña de nuestra red 
+SSID = "Nombre de la red"  #aqui se debe ingresar el nombre de nuestra red
+PASSWORD = "Contraseña de la red"  # de igual forma que en lo anterior ingresar la contraseña
 
-wlan = network.WLAN(network.STA_IF)
-wlan.active(True)
-wlan.connect(SSID, PASSWORD) #se conectara a la red con los dos atributos
+wlan = network.WLAN(network.STA_IF) #comprueba la conexion si se puede conectar
+wlan.active(True) #si si pasa al siguiente metodo
+wlan.connect(SSID, PASSWORD) #con este metodo se estable la conexion con nuestra red con los atributos que le proporcionamos anteriormente
 
 print("Conectando a WiFi...")
 while not wlan.isconnected():
-    time.sleep(1) #se conectara a la red y mostrara un mensaje en lo que se estable conexion con la red
+    time.sleep(1)
 
 print("Conectado a WiFi:", wlan.ifconfig())
 ip = wlan.ifconfig()[0]
 
 # ---------------------------
-# Configuración de LEDs
+# Configuración de LEDs (10 pines consecutivos del GP2 al GP11)
 # ---------------------------
-led_pins = [Pin(2, Pin.OUT), Pin(3, Pin.OUT), Pin(4, Pin.OUT)]
+led_pins = [Pin(i, Pin.OUT) for i in range(2, 12)]
 for led in led_pins:
     led.off()
 
@@ -32,49 +33,62 @@ for led in led_pins:
 def secuencia_1():  # Izquierda → Derecha
     for led in led_pins:
         led.on()
-        time.sleep(0.3)
+        time.sleep(0.2)
         led.off()
 
 def secuencia_2():  # Derecha → Izquierda
     for led in reversed(led_pins):
         led.on()
-        time.sleep(0.3)
+        time.sleep(0.2)
         led.off()
 
-def secuencia_3():  # Centro hacia lados
-    led_pins[1].on()
-    time.sleep(0.3)
-    led_pins[1].off()
-    led_pins[0].on(); led_pins[2].on()
-    time.sleep(0.3)
-    led_pins[0].off(); led_pins[2].off()
+def secuencia_3():  # Centro hacia los lados
+    centro = len(led_pins) // 2
+    for i in range(centro + 1):
+        if centro - i >= 0:
+            led_pins[centro - i].on()
+        if centro + i < len(led_pins):
+            led_pins[centro + i].on()
+        time.sleep(0.2)
+        for led in led_pins:
+            led.off()
 
 def secuencia_4():  # Solo costado derecho
-    led_pins[2].on(); time.sleep(0.5); led_pins[2].off()
+    led_pins[-1].on(); time.sleep(0.5); led_pins[-1].off()
 
 def secuencia_5():  # Solo costado izquierdo
     led_pins[0].on(); time.sleep(0.5); led_pins[0].off()
 
-def secuencia_6():  # Vúmetro (0→1→2)
-    for i in range(3):
+def secuencia_6():  # Vúmetro (acumulativo de izq. a der.)
+    for i in range(len(led_pins)):
         for j in range(i + 1):
             led_pins[j].on()
-        time.sleep(0.4)
+        time.sleep(0.2)
         for led in led_pins:
             led.off()
 
-def secuencia_7():  # Pares (0 y 2)
-    led_pins[0].on(); led_pins[2].on()
+def secuencia_7():  # Pares (índices pares)
+    for i in range(0, len(led_pins), 2):
+        led_pins[i].on()
     time.sleep(0.5)
-    led_pins[0].off(); led_pins[2].off()
+    for led in led_pins:
+        led.off()
 
-def secuencia_8():  # Nones (solo el centro)
-    led_pins[1].on(); time.sleep(0.5); led_pins[1].off()
-
-def secuencia_9():  # Dos de cada costado (0 y 2 encendidos)
-    led_pins[0].on(); led_pins[2].on()
+def secuencia_8():  # Nones (índices impares)
+    for i in range(1, len(led_pins), 2):
+        led_pins[i].on()
     time.sleep(0.5)
-    led_pins[0].off(); led_pins[2].off()
+    for led in led_pins:
+        led.off()
+
+def secuencia_9():  # Dos de cada costado (parpadeo 2 izq + 2 der)
+    for _ in range(3):
+        led_pins[0].on(); led_pins[1].on()
+        led_pins[-1].on(); led_pins[-2].on()
+        time.sleep(0.4)
+        for led in led_pins:
+            led.off()
+        time.sleep(0.2)
 
 # Mapeo de secuencias
 secuencias = {
